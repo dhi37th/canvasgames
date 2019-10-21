@@ -43,6 +43,7 @@
 	* 	Draw the snake	
 	*/
 	function drawSnake(){
+		checkCollision();
 		snake.forEach(drawSnakeTail);
 	}
 
@@ -98,6 +99,7 @@
 	*/
 	function checkCollision(){
 		var headSnake = snake[0];
+		console.log(headSnake);
 		//check boundary collison
 		if(headSnake.cx > 490 || headSnake.cx < 10
 			|| headSnake.cy > 490 || headSnake.cy < 10){
@@ -105,6 +107,7 @@
 		}
 		//check collison with itself
 		for(var i=1;i<snake.length-1;i++){
+			console.log(headSnake.cx+" "+snake[i].cx+" : "+headSnake.cy+" "+snake[i].cy)
 			if(headSnake.cx == snake[i].cx && headSnake.cy == snake[i].cy){
 				stop();
 			}
@@ -116,8 +119,12 @@
 	*/
 	function clearCanvas(){
 		ctx.beginPath();
-		ctx.fillStyle="black";
+		ctx.fillStyle="blue";
 		ctx.fillRect(0,0,canvas.width,canvas.height);
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.fillStyle="black";
+		ctx.fillRect(10,10,canvas.width-20,canvas.height-20);
 		ctx.closePath();
 	}
 
@@ -134,9 +141,8 @@
 	function play(){
 		clearCanvas();
 		drawFood();
-		drawSnake();
 		moveSnakeAndCheckFoodCollison();
-		checkCollision();
+		drawSnake();
 		updateScore();		
 	}
 	//add the keydown for arrow key bindings
