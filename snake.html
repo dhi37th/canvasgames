@@ -1,0 +1,188 @@
+
+<!doctype html>
+<html lang="en">
+<body>
+<canvas id="cnv" width="500" height="500"></canvas>
+<h3 style="color: blue;">Score: <span id="score">0</span></h3>
+<h3 style="color: red; display: none;" id="gameover">Game Over. Press Enter to Restart</h3>
+
+<script type="text/javascript">
+	//default variables with (center x, center y) positon for the snake balls
+	let snake = [{cx:160,cy:100},{cx:140,cy:100},{cx:120,cy:100},{cx:100,cy:100}];
+
+	var canvas = document.getElementById("cnv");
+	var ctx = canvas.getContext("2d");
+
+	//the right direction will be dx = +20
+	//the left direction will be dx = -20
+	//the up direction will be dy = -20
+	//the down direction will be dy = +20
+	var dx = 20, dy = 0;
+
+	//food for snake
+	var food ; 
+
+	//check the current direction of snake to prevent going reverse
+	var direction = "right";
+
+	//Check number of food collisions
+	var score = 0;
+
+	/**
+	*  Draw individual snake part	
+	*/
+	function drawSnakeTail(snakeTail){
+		ctx.beginPath();
+		ctx.fillStyle = "green";
+		ctx.arc(snakeTail.cx,snakeTail.cy,10,0,Math.PI * 2,false);
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	/**
+	* 	Draw the snake	
+	*/
+	function drawSnake(){
+		snake.forEach(drawSnakeTail);
+	}
+
+	/**
+	* 	Move the snake and check for food collision
+	*/
+	function moveSnakeAndCheckFoodCollison(){
+		const head = {cx : snake[0].cx + dx , cy : snake[0].cy + dy};
+		snake.unshift(head);
+		//check for food collision
+		if(snake[0].cx == food.cx && snake[0].cy == food.cy){
+			createFood();
+			score++;
+		}	
+		else{
+			snake.pop();
+		}
+	}
+
+	/**
+	* Create food on random location in the canvas	
+	*/
+	function createFood(){
+		// Find the max number between 20 - 480 for a new food
+		// Should be in the multiple of 20 because of food radius
+		// so best way is get a random number between 0 - 24 and multiply with 20
+		var max = (480/20) + 1;
+		var min = 1;
+		var foodx = 20*(Math.floor(Math.random() * (max - min ) + min));
+		var foody = 20*(Math.floor(Math.random() * (max - min ) + min));
+		//check if food is not in the same path as the snake is already in
+		snake.forEach(function isFoodOnSnake(snakeBody){
+			if(foodx == snakeBody.cx && foody == snakeBody.cy)
+				createFood();
+		});
+		food = {cx : foodx , cy : foody};
+
+	}
+
+	/**
+	*	Draw the food on the canvas
+	*/
+	function drawFood(){
+		ctx.beginPath();
+		ctx.fillStyle = "red";
+		ctx.arc(food.cx,food.cy,10,0,Math.PI * 2,false);
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	/**
+	*	Check for collsion with wall and itself
+	*/
+	function checkCollision(){
+		var headSnake = snake[0];
+		//check boundary collison
+		if(headSnake.cx > 490 || headSnake.cx < 10
+			|| headSnake.cy > 490 || headSnake.cy < 10){
+			stop();
+		}
+		//check collison with itself
+		for(var i=1;i<snake.length-1;i++){
+			if(headSnake.cx == snake[i].cx && headSnake.cy == snake[i].cy){
+				stop();
+			}
+		}
+	}
+
+	/**
+	* Clear the canvas 	
+	*/
+	function clearCanvas(){
+		ctx.beginPath();
+		ctx.fillStyle="black";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
+		ctx.closePath();
+	}
+
+	/**
+	*
+	*/
+	function updateScore(){
+		document.getElementById("score").innerHTML = score;
+	}
+
+	/**
+	*	Main method to start game
+	*/
+	function play(){
+		clearCanvas();
+		drawFood();
+		drawSnake();
+		moveSnakeAndCheckFoodCollison();
+		checkCollision();
+		updateScore();		
+	}
+	//add the keydown for arrow key bindings
+	document.addEventListener('keydown', logKey);
+
+	/**
+	*	Add arrow keys binding 
+	*/
+	function logKey(e) {
+		
+  		switch(e.keyCode){
+  			case 32 : stop(); break; //space
+  			case 38 : if(direction!= "down") { direction = "up"; dx = 0; dy = -20} break; // up arrow
+  			case 40 : if(direction!= "up") { direction = "down"; dx = 0; dy = 20} break; // down arrow
+  			case 39 : if(direction!= "left") { direction = "right"; dx = 20 ; dy = 0} break; // right arrow
+  			case 37 : if(direction!= "right") { direction = "left"; dx = -20; dy = 0} break; // left arrow
+  			case 13 : restart(); break;
+  		}
+
+	}
+
+	
+	var interval = setInterval(play,150);
+	createFood();
+	/**
+	*	Stop the game
+	*/
+	function stop(){
+		document.getElementById("gameover").style.display = "block";
+		clearInterval(interval);
+	}
+
+	/**
+	*	Restart the game
+	*/
+	function restart(){
+		clearInterval(interval);
+		score = 0;
+		snake = [{cx:160,cy:100},{cx:140,cy:100},{cx:120,cy:100},{cx:100,cy:100}];
+		interval = setInterval(play,150);
+		food = {};
+		dx = 20; dy = 0;
+		createFood();
+		document.getElementById("gameover").style.display = "none";
+	}
+
+</script>
+</body>
+</html>
