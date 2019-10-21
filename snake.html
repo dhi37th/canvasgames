@@ -25,6 +25,11 @@
 	//check the current direction of snake to prevent going reverse
 	var direction = "right";
 
+	//if buttons are clicked quickly before 150ms(settimeout time)
+	//then the snake gets reversed
+	//this variable will help us prevent that
+	var isDirectionChanged = false;
+
 	//Check number of food collisions
 	var score = 0;
 
@@ -141,6 +146,7 @@
 	function play(){
 		clearCanvas();
 		drawFood();
+		isDirectionChanged = false;
 		moveSnakeAndCheckFoodCollison();
 		drawSnake();
 		updateScore();		
@@ -152,6 +158,9 @@
 	*	Add arrow keys binding 
 	*/
 	function logKey(e) {
+		if(isDirectionChanged) return;
+
+		isDirectionChanged = true;
 		
   		switch(e.keyCode){
   			case 32 : stop(); break; //space
