@@ -104,15 +104,13 @@
 	*/
 	function checkCollision(){
 		var headSnake = snake[0];
-		console.log(headSnake);
 		//check boundary collison
 		if(headSnake.cx > 490 || headSnake.cx < 10
 			|| headSnake.cy > 490 || headSnake.cy < 10){
 			stop();
 		}
 		//check collison with itself
-		for(var i=1;i<snake.length-1;i++){
-			console.log(headSnake.cx+" "+snake[i].cx+" : "+headSnake.cy+" "+snake[i].cy)
+		for(var i=1;i<snake.length;i++){
 			if(headSnake.cx == snake[i].cx && headSnake.cy == snake[i].cy){
 				stop();
 			}
