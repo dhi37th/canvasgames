@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Flappy Bird</title>
+</head>
+<body>
+	<canvas id="cnv" width="500" height="500"></canvas>
+	<h3 style="color: blue;">Score: <span id="score">0</span></h3>
+	<h3 style="color: red; display: none;" id="gameover">Game Over. Press Enter to Restart</h3>
+	<script type="text/javascript">
+	
+
+		var canvas = document.getElementById("cnv");
+		var ctx = canvas.getContext("2d");
+
+		var bird = {
+		  x: 50,
+		  y: 100,
+		  vy: 1.6,
+		  radius: 10,
+		  color: 'green',
+		  draw: function() {
+		    ctx.beginPath();
+		    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+		    ctx.closePath();
+		    ctx.fillStyle = this.color;
+		    ctx.fill();
+		  }
+		};
+		var pipes = [];
+		/**
+		*	Draw the bird
+		*/
+		function drawBird(){
+			bird.draw();			
+			if(bird.y <= 480){
+				bird.y += bird.vy;
+			}
+		}
+
+		/**
+		*
+		*/
+		function hop(){
+			console.log("hop");
+			if(bird.y >=20){
+				bird.y -= 10*bird.vy;
+			}
+		}
+		/**
+		* Create moving Pipes of random sizes
+		*/
+		function createPipes(){
+
+		}
+		/**
+		* Clear the canvas 	
+		*/
+		function clearCanvas(){
+			ctx.beginPath();
+			ctx.fillStyle="black";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.closePath();
+		}
+
+		/**
+		* Update the score
+		*/
+		function updateScore(){
+			document.getElementById("score").innerHTML = score;
+		}
+
+		/**
+		*	Main method to start game
+		*/
+		function play(){
+			clearCanvas();
+			createPipes();
+			drawBird();
+			interval = window.requestAnimationFrame(play);
+		}
+		//add the keydown for arrow key bindings
+		document.addEventListener('keydown', logKey);
+
+		/**
+		*	Add key bindings 
+		*/
+		function logKey(e) {			
+	  		switch(e.keyCode){
+	  			case 32 : hop(); break; //space
+	  			case 13 : stop(); break;
+	  		}
+
+		}
+		/**
+		* The play interval
+		*/
+		var interval = window.requestAnimationFrame(play);
+		/**
+		*	Stop the game
+		*/
+		function stop(){
+			document.getElementById("gameover").style.display = "block";
+			window.cancelAnimationFrame(interval);
+		}
+
+	</script>
+</body>
+</html>
