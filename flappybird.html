@@ -12,11 +12,13 @@
 
 		var canvas = document.getElementById("cnv");
 		var ctx = canvas.getContext("2d");
+		var gameEnded = false;
+		var score = 0;
 
 		var bird = {
 		  x: 50,
 		  y: 100,
-		  vy: 1.6,
+		  vy: 2,
 		  radius: 10,
 		  color: 'green',
 		  draw: function() {
@@ -27,6 +29,25 @@
 		    ctx.fill();
 		  }
 		};
+
+		var pipe = {
+		  x: 450,
+		  y: 0,
+		  bottomy:0,
+		  w: 40,
+		  h: 0,
+		  diff: 80,
+		  bottomh:0,
+		  color: 'white',
+		  draw: function() {
+		    ctx.beginPath();
+		    ctx.fillStyle=this.color;
+		    ctx.fillRect(this.x,this.y,this.w,this.h);
+		    ctx.fillRect(this.x,this.bottomy,this.w,this.bottomh);
+		    ctx.closePath();
+		  }
+		};
+		
 		var pipes = [];
 		/**
 		*	Draw the bird
@@ -42,16 +63,61 @@
 		*
 		*/
 		function hop(){
-			console.log("hop");
 			if(bird.y >=20){
-				bird.y -= 10*bird.vy;
+				bird.y -= 30;
 			}
 		}
+		/**
+		*	Draw the pipes
+		*/
+		function drawPipes(){
+			for(var i=0;i<pipes.length;i++){
+				var tempPipe = pipes[i];
+				
+				tempPipe.draw();
+				if(checkCollision(tempPipe)){
+					stop();
+					break;
+				}
+
+				tempPipe.x --;
+				if(tempPipe.x == 0 ){
+					score ++;
+				}
+
+				if(tempPipe.x==300){
+					createPipes();
+				}
+				
+			}
+		}
+
+		/**
+		* Check collisios
+		*/
+		function checkCollision(tempPipe){
+			if(bird.x+bird.radius >= tempPipe.x && bird.x <= tempPipe.x+tempPipe.w){
+				//&& (bird.y <= tempPipe.y + tempPipe.h || bird.y + bird.radius >= ){
+				if(bird.y-bird.radius <= tempPipe.y+tempPipe.h
+					|| bird.y+bird.radius >= tempPipe.h+tempPipe.diff){
+					tempPipe.color = "red";
+					tempPipe.draw();
+					return true;
+				}
+			}
+
+		}
+
 		/**
 		* Create moving Pipes of random sizes
 		*/
 		function createPipes(){
-
+			var pipeTemp = Object.create(pipe);
+			pipeTemp.h = Math.floor(Math.random()*350+1);
+			pipeTemp.bottomy = pipeTemp.h + pipeTemp.diff;
+			pipeTemp.bottomh = canvas.width-(pipeTemp.h+pipeTemp.diff);
+			console.log(pipeTemp);
+			pipes.push(pipeTemp);
 		}
 		/**
 		* Clear the canvas 	
@@ -74,10 +140,13 @@
 		*	Main method to start game
 		*/
 		function play(){
+
 			clearCanvas();
-			createPipes();
 			drawBird();
-			interval = window.requestAnimationFrame(play);
+			drawPipes();
+			updateScore();
+			if(!gameEnded)
+				interval = window.requestAnimationFrame(play);
 		}
 		//add the keydown for arrow key bindings
 		document.addEventListener('keydown', logKey);
@@ -85,13 +154,16 @@
 		/**
 		*	Add key bindings 
 		*/
-		function logKey(e) {			
+		function logKey(e) {		
 	  		switch(e.keyCode){
+	  			case 16 : stop(); break; //shift
 	  			case 32 : hop(); break; //space
-	  			case 13 : stop(); break;
+	  			case 13 : restart(); break; //enter
 	  		}
 
 		}
+		//create initial one pipe
+		createPipes();
 		/**
 		* The play interval
 		*/
@@ -102,6 +174,22 @@
 		function stop(){
 			document.getElementById("gameover").style.display = "block";
 			window.cancelAnimationFrame(interval);
+			gameEnded = true;
+		}
+
+		/**
+		*	Restart the game
+		*/
+		function restart(){
+			window.cancelAnimationFrame(interval);
+			pipes = [];
+			score = 0;
+			createPipes();
+			bird.x = 50;
+		  	bird.y = 100;
+		  	gameEnded = false;
+		  	interval = window.requestAnimationFrame(play);
+		  	document.getElementById("gameover").style.display = "none";
 		}
 
 	</script>
