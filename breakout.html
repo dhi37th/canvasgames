@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Breakout</title>
+</head>
+<body>
+	<canvas id="cnv" width="500" height="500"></canvas>
+	<h3 style="color: blue;">Score: <span id="score">0</span></h3>
+	<h3 style="color: red; display: none;" id="gameover">Game Over. Press Enter to Restart</h3>
+	<script type="text/javascript">
+
+		var canvas = document.getElementById("cnv");
+		var ctx = canvas.getContext("2d");
+		var gameEnded = false;
+		var score = 0;
+		var bricks = [];
+		var row = 3;
+		var column = 6; 
+
+		var ball = {
+		  x: 230,
+		  y: 450,
+		  vx: -5,
+		  vy: -5,
+		  radius: 10,
+		  color: 'yellow',
+		  draw: function() {
+		    ctx.beginPath();
+		    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+		    ctx.closePath();
+		    ctx.fillStyle = this.color;
+		    ctx.fill();
+		  }
+		};
+
+		var paddle = {
+			x : 200,
+			y : 460,
+			h : 10,
+			w : 60,
+			direction : 0,
+			color : 'green',
+			draw : function(){
+				ctx.beginPath();
+		    	ctx.fillStyle = this.color;
+			    ctx.fillRect(this.x,this.y,this.w,this.h);
+			    ctx.closePath();
+			} 
+		}
+
+		var brick = {
+			x : 20,
+			y : 20,
+			h : 30,
+			w : 60,
+			pad : 20,
+			removed : 0,
+			color : 'red',
+			draw : function(){
+				ctx.beginPath();
+		    	ctx.fillStyle = this.color;
+			    ctx.fillRect(this.x,this.y,this.w,this.h);
+			    ctx.closePath();
+			}
+		}
+
+		/**
+		*	Initialize bricks
+		*/
+		function initializeBricks(){
+			var x = 20;
+			var y = 20; 
+			for(var i=0; i<row;i++){
+				x = 20;
+				bricks[i] = [];
+				for(var j=0;j<column;j++){
+					var tempBrick = Object.create(brick);
+					tempBrick.x = x;
+					tempBrick.y = y;
+					bricks[i][j] = tempBrick;					
+					x += brick.w + brick.pad;
+				}
+				y += brick.h + brick.pad;
+			}
+		}
+
+		/**
+		*	Draw bricks
+		*/
+		function drawBricks(){
+			for(var i=0; i<row;i++){
+				for(var j=0;j<column;j++){
+					var tempBrick = bricks[i][j];
+					if(tempBrick.removed == 0){
+						checkCollision(tempBrick);
+						tempBrick.draw();
+					}
+					
+				}
+			}
+		}
+
+		/**
+		* 	Draw and move the paddle
+		*/
+		function drawPaddle(){
+			if(paddle.direction > 0){
+				paddle.x = paddle.x + 5;
+				if(paddle.x >= canvas.width-paddle.w){
+					paddle.x = canvas.width-paddle.w;
+				}
+			}else if(paddle.direction < 0){
+				 paddle.x = paddle.x - 5;
+				 if(paddle.x <= 0){
+					paddle.x = 0;
+				}
+			}
+			
+			paddle.draw();
+		}
+
+		/**
+		*	Draw and move the ball
+		*/
+		function drawBall(){
+			ball.x += ball.vx;
+			ball.y += ball.vy;
+
+			if(ball.x-ball.radius <= 0){
+				ball.vx = 5;
+			}else if(ball.x >= canvas.width-ball.radius){
+				ball.vx = -5;
+			}
+
+			if(ball.y-ball.radius <= 0){
+				ball.vy = 5;
+			}else if((ball.x + ball.radius >= paddle.x && ball.x - ball.radius <= paddle.x + paddle.w)
+				&& ball.y + ball.radius == paddle.y){				
+					ball.vy = -5;
+					if(paddle.direction > 0){
+						ball.vx = 5;
+					}else if(paddle.direction < 0){
+						ball.vx = -5;
+					}
+			}else if(ball.y >= paddle.y + 10){
+				gameEnded = true;
+				stop();
+			}
+
+			ball.draw();
+		}
+
+		/**
+		*	Check for collision
+		*/
+		function checkCollision(tempBrick){
+			if((ball.x >= tempBrick.x && ball.x <= tempBrick.x + tempBrick.w)
+				&& ball.y >= tempBrick.y && ball.y <= tempBrick.y + tempBrick.h){
+				tempBrick.x = 0;
+				tempBrick.y = 0;
+				tempBrick.removed = 1;
+				ball.vy = 5;
+				if(ball.vx > 0){
+					ball.vx = -5;
+				}else{
+					ball.vx = 5;
+				}
+				score ++;
+			}
+
+			if(score == row * column){
+				stop();
+			}
+		}
+
+		/**
+		*	Draw items
+		*/
+		function drawItems(){
+			drawBall();
+			drawPaddle();
+			drawBricks();
+		}
+		/**
+		*	Play game
+		*/
+		function play(){
+			clearCanvas();
+			drawItems();
+			updateScore();
+			if(!gameEnded)
+				interval = window.requestAnimationFrame(play);
+		}
+
+		//add the keydown for arrow key bindings
+		document.addEventListener('keydown', logKeyDown);
+		document.addEventListener('keyup', logKeyUp);
+
+		/**
+		*	Add key press bindings 
+		*/
+		function logKeyDown(e) {	
+	  		switch(e.keyCode){
+	  			case 39 : paddle.direction = 1; break; //right
+	  			case 37 : paddle.direction = -1; break; //left
+	  			case 16 : stop(); break; //shift
+	  			case 13 : restart(); break; //enter
+	  		}
+
+		}
+		/**
+		*	Add key release bindings 
+		*/
+		function logKeyUp(e) {	
+	  		paddle.direction = 0;
+		}
+
+		/**
+		* Clear the canvas 	
+		*/
+		function clearCanvas(){
+			ctx.beginPath();
+			ctx.fillStyle="black";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.closePath();
+			ctx.beginPath();
+			ctx.fillStyle="pink";
+			ctx.fillRect(0,480,canvas.width,30);
+			ctx.closePath();
+		}
+
+		/**
+		* Update the score
+		*/
+		function updateScore(){
+			document.getElementById("score").innerHTML = score;
+		}
+
+		initializeBricks();
+		/**
+		* The play interval
+		*/
+		var interval = window.requestAnimationFrame(play);
+		/**
+		*	Stop the game
+		*/
+		function stop(){
+			document.getElementById("gameover").style.display = "block";
+			window.cancelAnimationFrame(interval);
+			gameEnded = true;
+		}
+		/**
+		*	Restart the game
+		*/
+		function restart(){
+			window.cancelAnimationFrame(interval);
+			score = 0;
+			ball.x = 230;
+		  	ball.y = 450;
+		  	ball.vx = -5;
+		  	ball.vy = -5;
+		  	paddle.x = 200;
+		  	paddle.y = 460;
+		  	paddle.direction = 0;
+		  	gameEnded = false;
+		  	bricks = [];
+		  	initializeBricks();
+		  	interval = window.requestAnimationFrame(play);
+		  	document.getElementById("gameover").style.display = "none";
+		}
+	</script>
+</body>
+</html>
