@@ -30,7 +30,7 @@
 
 		var distBall = 0; //new x point the ball travels to . sx of stick
 
-		var nextStepOn = false;
+		var nextStepOn = false; // move the steps for next round
 
 		var ball = {
 		  x: 80,
@@ -93,15 +93,15 @@
 		*	Draw the ball
 		*/
 		function drawBall(){
-			if(!nextStepOn && moveBall && (ball.x <= distBall || ball.x < steps[1].x + steps[1].w)){
-				ball.x++;
+			if(!nextStepOn && moveBall && (ball.x < distBall /*|| ball.x < steps[1].x + steps[1].w*/)){
+				ball.x += 2;
 			}else if(!nextStepOn && ball.x > steps[1].x + steps[1].w){
 				moveBall = false; 
 				ball.y = ball.y + 5;
 				if(ball.y == 490){
 					stop();
 				}
-			}else if(!nextStepOn && ball.x == steps[1].x + steps[1].w){
+			}else if(!nextStepOn && ball.x == distBall/*steps[1].x + steps[1].w*/){
 				console.log(nextStepOn);
 				nextStepOn = true;
 			}	
@@ -116,6 +116,7 @@
 			stick.h = 0;
 			stick.w = 5;
 			stick.angle = 270;
+			rotateStick = false;
 		}
 
 		/**
@@ -125,7 +126,6 @@
 			if(rotateStick){
 				stick.sx = stick.x + Math.cos(stick.angle * Math.PI / 180) * stick.h;
         		stick.sy = stick.y + Math.sin(stick.angle * Math.PI / 180) * stick.h;
-        		console.log(stick.angle);
         		if(stick.angle == 360 && stick.h >= gap){
         			rotateStick = false;
         			moveBall = true;
@@ -152,9 +152,9 @@
 			if(steps.length > 0){
 				var lastStep = steps[steps.length-1];
 				var tempStep = Object.create(step);
-				gap = Math.floor(Math.random() * (max - min + 1) + min);
-				console.log(gap);
+				gap = Math.floor((Math.random() * (max - min + 1) + min) / 2) * 2;
 				tempStep.x = lastStep.x + lastStep.w + gap;
+				console.log(tempStep.x);
 				steps.push(tempStep);				
 			}else{
 				steps.push(Object.create(step));
@@ -166,9 +166,9 @@
 			if(nextStepOn){
 				resetStick();
 				for(var i=0;i<steps.length;i++){
-					steps[i].x--;
+					steps[i].x -= 2;
 				}
-				ball.x--;
+				ball.x -= 2;
 				if(steps[1].x == 50){
 					nextStepOn = false;
 					moveBall = false;
@@ -211,9 +211,13 @@
 		*/
 		function logKeyDown(e) {	
 	  		switch(e.keyCode){
-	  			case 32 : stick.sy--;  stick.h++; break; //space
+	  			case 32 : 
+	  					if(!rotateStick  && !nextStepOn && !moveBall) {
+	  						stick.sy -= 4;  stick.h += 4; 
+	  					}
+	  					break; //space
 	  			case 16 : stop(); break; //shift
-	  			case 13 : restart(); break; //enter
+	  			case 13 : location.reload(); break; //enter
 	  		}
 
 		}
@@ -222,7 +226,11 @@
 		*/
 		function logKeyUp(e) {	
 	  		switch(e.keyCode){
-	  			case 32 : rotateStick = true; break;
+	  			case 32 : 
+	  					if(!nextStepOn){
+	  						rotateStick = true;
+	  					}
+	  					break;
 	  		}
 		}
 
