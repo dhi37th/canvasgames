@@ -14,4 +14,7 @@ Contains various Games created using plain Javascript + HTML5 + Canvas
 <li>Stick Hero 
   <ul><li>Use space key to move stick. Enter to restart. Shift to end game</ul></li>
 </li>
+<li>Arcade Shooter 
+  <ul><li>Use arrow keys to move around. Use space key to shoot. Enter to restart. Shift to end game</ul></li>
+</li>
 </ol>
