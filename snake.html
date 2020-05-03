@@ -8,6 +8,7 @@
 <canvas id="cnv" width="500" height="500"></canvas>
 <h3 style="color: blue;">Score: <span id="score">0</span></h3>
 <h3 style="color: red; display: none;" id="gameover">Game Over. Press Enter to Restart</h3>
+<h3>Note: Use arrow keys to move around. Space bar to end the game. Enter to restart once a game has ended.</h3>
 
 <script type="text/javascript">
 	//default variables with (center x, center y) positon for the snake balls
@@ -175,8 +176,8 @@
 	}
 
 	
-	var interval = setInterval(play,150);
-	createFood();
+var interval = setInterval(play,150);
+createFood();
 	/**
 	*	Stop the game
 	*/
