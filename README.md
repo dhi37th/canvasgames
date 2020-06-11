@@ -1,4 +1,5 @@
 # canvasgames
+
 Contains various Games created using plain Javascript + HTML5 + Canvas
 
 <ol>
@@ -17,21 +18,33 @@ Contains various Games created using plain Javascript + HTML5 + Canvas
 <li>Arcade Shooter 
   <ul><li>Use arrow keys to move around. Use space key to shoot. Enter to restart. Shift to end game</li></ul>
 </li>
+<li>Reaction Timer 
+  <ul><li>Use mouse clicks to check your reaction time.</li></ul>
+</li>
 </ol>
 
 # Preview
 
 # Snake
+
 ![Snake](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/snake.gif)
 
 # Flappy Bird
+
 ![Flappy Bird](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/flappybird.gif)
 
 # Breakout
+
 ![Breakout](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/breakout.gif)
 
 # Stick Hero
+
 ![Stick Hero](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/stickhero.gif)
 
 # Arcade Shooter
+
 ![Arcade shooter](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/arcadeshooter.gif)
+
+# Reaction Tester
+
+![Reaction Tester](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/reactiontester.gif)
