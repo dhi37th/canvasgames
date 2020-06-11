@@ -47,4 +47,4 @@ Contains various Games created using plain Javascript + HTML5 + Canvas
 
 # Reaction Tester
 
-![Reaction Tester](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/reactiontester.gif)
+![Reaction Tester](https://github.com/dhi37th/projectscreenshots/blob/master/Project_Screenshot/canvasgames/reaction-tester.gif)
