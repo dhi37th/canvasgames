@@ -1,6 +1,6 @@
 # canvasgames
 
-Contains various Games created using plain Javascript + HTML5 + Canvas
+Contains various Games created using Vanilla Javascript + HTML5 + Canvas
 
 <ol>
 <li>Snake 
